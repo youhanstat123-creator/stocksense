@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ✅ 최신 문법으로 교체 -->
+<head th:replace="~{fragments/layout :: head('사원 정보 수정')}"></head>
+
+<!-- ✅ layout도 최신 문법 권장 -->
+<body th:replace="~{fragments/layout :: layout('emp', ~{::content})}">
+<div th:fragment="content">
+
+    <div class="container-xl py-4">
+
+        <!-- 타이틀 -->
+        <div class="d-flex align-items-start justify-content-between mb-3">
+            <div>
+                <h2 class="fw-bold mb-1" th:text="${dto.empId} + '번 사원 정보 수정하기 ✧'">A1001번 사원 정보 수정하기 ✧</h2>
+                <div class="text-muted small">필수 항목을 확인하고 저장하세요.</div>
+            </div>
+            <a class="btn btn-outline-secondary" th:href="@{/emp/list}">목록</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- ✅ 파일 업로드하려면 enctype 필수 -->
+                <form th:action="@{/emp/edit}" method="post" enctype="multipart/form-data" class="row g-4">
+
+                    <!-- 사원번호 (readonly) -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">사원번호</label>
+                        <input type="text" class="form-control form-control-lg"
+                               name="empId" th:value="${dto.empId}" readonly>
+                    </div>
+
+                    <!-- 이름 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">사원명</label>
+                        <input type="text" class="form-control form-control-lg"
+                               name="empName" th:value="${dto.empName}" placeholder="이름">
+                    </div>
+
+                    <!-- 생년월일 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">생년월일</label>
+                        <input type="date" class="form-control form-control-lg"
+                               name="birth" th:value="${dto.birth}">
+                    </div>
+
+                    <!-- 부서 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">부서</label>
+                        <select class="form-select form-select-lg" name="dept">
+                            <option value="">부서를 선택하세요</option>
+                            <option value="총무" th:selected="${dto.dept=='총무'}">총무</option>
+                            <option value="영업" th:selected="${dto.dept=='영업'}">영업</option>
+                            <option value="관리" th:selected="${dto.dept=='관리'}">관리</option>
+                            <option value="개발" th:selected="${dto.dept=='개발'}">개발</option>
+                            <option value="인사" th:selected="${dto.dept=='인사'}">인사</option>
+                        </select>
+                    </div>
+
+                    <!-- 전화번호 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">전화번호</label>
+                        <input type="text" class="form-control form-control-lg"
+                               name="phone" th:value="${dto.phone}" placeholder="010-1234-5678">
+                    </div>
+
+                    <!-- 재직상태 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">재직상태</label>
+                        <select class="form-select form-select-lg" name="status">
+                            <option value="" th:selected="${dto.status==null or dto.status==''}">선택</option>
+                            <option value="ACTIVE" th:selected="${dto.status=='ACTIVE' or dto.status=='재직중'}">재직중</option>
+                            <option value="CONTRACT" th:selected="${dto.status=='CONTRACT' or dto.status=='계약직'}">계약직</option>
+                            <option value="LEAVE" th:selected="${dto.status=='LEAVE' or dto.status=='휴직'}">휴직</option>
+                            <option value="VACATION" th:selected="${dto.status=='VACATION' or dto.status=='휴가'}">휴가</option>
+                            <option value="RESIGNED" th:selected="${dto.status=='RESIGNED' or dto.status=='퇴사'}">퇴사</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ 이미지 영역 (상품수정처럼) -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">프로필 이미지</label>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <!-- 기존 이미지 미리보기 -->
+                            <div class="border rounded-3 p-2 bg-white" style="width:120px;">
+                                <img id="previewImg"
+                                     th:src="${dto.imageName != null} ? @{/uploads/{img}(img=${dto.imageName})} : @{/images/noimage.png}"
+                                     style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:12px;">
+                                <div class="text-muted small text-center mt-2"
+                                     th:text="${dto.imageName != null ? dto.imageName : 'N/A'}">N/A</div>
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <!-- 파일 선택 -->
+                                <input class="form-control form-control-lg" type="file" name="imageFile" accept="image/*"
+                                       onchange="previewFile(this)">
+                                <div class="text-muted small mt-2">
+                                    선택하면 미리보기가 즉시 반영됩니다. (선택 안 하면 기존 이미지 유지)
+                                </div>
+
+                                <!-- ✅ 기존 이미지 유지용 hidden -->
+                                <input type="hidden" name="imageName" th:value="${dto.imageName}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="col-12 d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">수정확인</button>
+                        <a th:href="@{/emp/list}" class="btn btn-outline-secondary btn-lg px-4">취소</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewFile(input){
+          const file = input.files && input.files[0];
+          if(!file) return;
+          const img = document.getElementById('previewImg');
+          const url = URL.createObjectURL(file);
+          img.src = url;
+          img.onload = () => URL.revokeObjectURL(url);
+        }
+    </script>
+
+</div>
+</body>
+</html>

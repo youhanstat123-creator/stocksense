@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('상품 목록')"></head>
+<body th:replace="fragments/layout :: layout('prod', ~{::content})">
+
+<div th:fragment="content">
+    <div class="cardx p-4">
+
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div>
+                <h4 class="m-0 fw-bold">상품 목록</h4>
+                <div class="muted small mt-1">검색/필터 + 페이징 + 상태 자동 표시 + 이미지/입고메모</div>
+            </div>
+            <a th:href="@{/product/new}" class="btn btn-primary">+ 상품 추가</a>
+        </div>
+
+        <div th:if="${msg}" class="alert alert-success mt-3 mb-0" th:text="${msg}"></div>
+        <div th:if="${error}" class="alert alert-danger mt-3 mb-0" th:text="${error}"></div>
+
+        <!-- ✅ 검색/필터 -->
+        <form class="row g-2 mt-3" method="get" th:action="@{/product/list}">
+            <div class="col-lg-4">
+                <input class="form-control" name="kw" th:value="${kw}" placeholder="상품명/카테고리/구분 검색">
+            </div>
+
+            <div class="col-lg-3">
+                <select class="form-select" name="status">
+                    <option value="ALL" th:selected="${status=='ALL'}">상태: 전체</option>
+                    <option value="OK" th:selected="${status=='OK'}">정상</option>
+                    <option value="WARN" th:selected="${status=='WARN'}">주의</option>
+                    <option value="DANGER" th:selected="${status=='DANGER'}">위험</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3">
+                <select class="form-select" name="managerId">
+                    <option value="" th:selected="${managerId==null || managerId==''}">담당자: 전체</option>
+                    <option th:each="e : ${emps}"
+                            th:value="${e.empId}"
+                            th:selected="${managerId == e.empId}"
+                            th:text="${e.empId + ' / ' + e.empName + ' (' + e.dept + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-2 d-grid">
+                <button class="btn btn-outline-secondary" type="submit">적용</button>
+            </div>
+
+            <!-- 페이징 유지용 -->
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="size" th:value="${size}">
+        </form>
+
+        <style>
+            /* 이미지 썸네일 */
+            .img-thumb{
+              width:46px;height:46px;
+              border-radius:12px;
+              border:1px solid #e5e7eb;
+              background:#fff;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              overflow:hidden;
+              cursor:zoom-in;
+            }
+            .img-thumb img{
+              width:100%;
+              height:100%;
+              object-fit:cover;
+            }
+            .img-na{
+              width:46px;height:46px;
+              border-radius:12px;
+              border:1px dashed #d1d5db;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:12px;
+              font-weight:800;
+              color:#9ca3af;
+              background:#fff;
+            }
+
+            /* hover 확대 레이어 */
+            #imgPreview{
+              position:fixed;
+              width:360px;
+              height:360px;
+              background:#fff;
+              border:1px solid #e5e7eb;
+              border-radius:16px;
+              box-shadow:0 20px 55px rgba(0,0,0,.25);
+              padding:10px;
+              display:none;
+              z-index:99999;
+            }
+            #imgPreview img{
+              width:100%;
+              height:100%;
+              object-fit:contain;
+              border-radius:12px;
+            }
+
+            /* ✅ 위험 아이콘 + CSS 툴팁 */
+            .danger-wrap{ position:relative; display:inline-flex; align-items:center; }
+            .danger-icon{
+              width:26px;
+              height:26px;
+              border-radius:999px;
+              display:inline-flex;
+              align-items:center;
+              justify-content:center;
+              font-weight:900;
+              border:1px solid #fecaca;
+              background:#fef2f2;
+              color:#991b1b;
+              line-height:1;
+              cursor:help;
+            }
+            @keyframes dangerBlink {
+              0%   { opacity:1; transform:scale(1); }
+              50%  { opacity:0.2; transform:scale(1.15); }
+              100% { opacity:1; transform:scale(1); }
+            }
+            .danger-icon.blink{
+              animation: dangerBlink 1.2s infinite;
+            }
+            .danger-tip{
+              position:absolute; left:50%; transform:translateX(-50%);
+              top:34px;
+              background:rgba(17,24,39,.92); color:#fff;
+              padding:10px 12px; border-radius:12px;
+              white-space:nowrap;
+              width:max-content;
+              max-width:520px;
+              overflow:visible;
+              text-overflow:clip;
+              font-size:13px; font-weight:700;
+              box-shadow:0 10px 30px rgba(0,0,0,.25);
+              opacity:0; visibility:hidden; pointer-events:none;
+              z-index:9999;
+            }
+            .danger-wrap:hover .danger-tip{ opacity:1; visibility:visible; }
+            .danger-tip::before{
+              content:"";
+              position:absolute;
+              top:-6px;
+              left:50%;
+              transform:translateX(-50%);
+              border-width:0 6px 6px 6px;
+              border-style:solid;
+              border-color:transparent transparent rgba(17,24,39,.92) transparent;
+            }
+
+            /* ✅ 이미지 프리뷰가 다른 요소에 가려지는 경우 대비 */
+            .table-responsive{ overflow-x:auto; overflow-y:visible; }
+            table.table, table.table td, table.table th{ overflow:visible; }
+
+            /* 삭제 버튼 */
+            .btn-delete {
+              background-color: #f3f4f6;
+              color: inherit;
+              border-color: inherit;
+            }
+            .btn-delete:hover {
+              color: #dc3545;
+              border-color: #dc3545;
+              background-color: transparent;
+            }
+
+            /* ✅ 관리(상세/수정/삭제) 정렬/길이 통일 */
+            th.manage-col { width: 260px; }
+            td.manage-td  { width: 260px; }
+
+            .manage-box{
+              width: 100%;
+              display:flex;
+              flex-direction:column;
+              gap:10px;
+            }
+            .manage-actions{
+              display:grid;
+              grid-template-columns: 1fr 1fr 1fr;
+              gap:6px;
+              align-items:center;
+            }
+            .manage-actions a,
+            .manage-actions form{
+              margin:0;
+            }
+            .manage-actions .btn{
+              width:100%;
+              height:32px;
+              padding:0 .55rem;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              line-height:1;
+            }
+            .manage-divider{
+              height:1px;
+              background:#eef2f7;
+              width:100%;
+            }
+            /* 상태 뱃지(정상/주의/위험) */
+.badge-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  border:1px solid transparent;
+  line-height:1;
+}
+
+/* 정상 */
+.badge-pill.badge-ok{
+  background:#ecfdf5;
+  color:#065f46;
+  border-color:#a7f3d0;
+}
+
+/* 주의 */
+.badge-pill.badge-warn{
+  background:#fffbeb;
+  color:#92400e;
+  border-color:#fcd34d;
+}
+
+/* 위험 */
+.badge-pill.badge-danger{
+  background:#fef2f2;
+  color:#991b1b;
+  border-color:#fecaca;
+}
+
+        </style>
+
+        <!-- ✅ 목록 -->
+        <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th style="width:80px;">ID</th>
+                    <th style="width:90px;">이미지</th>
+                    <th>상품명</th>
+                    <th style="width:110px;">구분</th>
+                    <th style="width:160px;">카테고리(세부)</th>
+                    <th style="width:140px;">가격</th>
+                    <th style="width:90px;">재고</th>
+                    <th style="width:110px;">최소재고</th>
+                    <th style="width:140px;">상태</th>
+                    <th style="width:180px;">담당자</th>
+                    <th class="manage-col">관리</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="p : ${list}">
+                    <td th:text="${p.prodId}">1</td>
+
+                    <!-- 이미지 -->
+                    <td>
+                        <div th:if="${p.imageName != null and p.imageName != ''}"
+                             class="img-thumb"
+                             th:data-img="@{/uploads/{f}(f=${p.imageName})}">
+                            <img th:src="@{/uploads/{f}(f=${p.imageName})}" alt="thumb">
+                        </div>
+                        <div th:if="${p.imageName == null or p.imageName == ''}" class="img-na">N/A</div>
+                    </td>
+
+                    <!-- 상품명 -->
+                    <td>
+                        <a class="text-decoration-none"
+                           th:href="@{/product/detail(id=${p.prodId})}"
+                           th:text="${p.prodName}">상품</a>
+                        <div class="muted small">
+                            <span th:text="${p.areaType}">사무실</span>
+                            <span class="mx-1">·</span>
+                            <span th:text="${p.category}">세부</span>
+                        </div>
+                    </td>
+
+                    <!-- ✅ 구분/세부카테고리 -->
+                    <td th:text="${p.areaType}">사무실</td>
+                    <td th:text="${p.category}">분류</td>
+
+                    <td th:text="${#numbers.formatInteger(p.price, 0, 'COMMA')} + '원'">0원</td>
+                    <td th:text="${p.stock}">0</td>
+                    <td th:text="${p.minStock}">0</td>
+
+                    <!-- 상태 + 위험 메모 -->
+                    <td>
+                        <span class="badge-pill"
+                              th:classappend="${p.stock <= p.minStock} ? ' badge-danger' :
+                              (${p.stock <= p.minStock + 5} ? ' badge-warn' : ' badge-ok')"
+                              th:text="${p.stock <= p.minStock} ? '위험' :
+                              (${p.stock <= p.minStock + 5} ? '주의' : '정상')">
+                        </span>
+
+                        <!-- ✅ 위험일 때만 아이콘 + 툴팁 -->
+                        <span th:if="${p.stock <= p.minStock}" class="danger-wrap ms-2">
+                            <span class="danger-icon blink">!</span>
+
+                            <span class="danger-tip"
+                                  th:with="r=${restockMap[p.prodId]}"
+                                  th:text="${r == null} ? '입고예정 없음'
+                                  : '입고예정: ' + ${#temporals.format(r.etaDate, 'MM/dd')}
+                                  + ' · ' + ${r.qty} + '개'
+                                  + (${r.note != null and !#strings.isEmpty(r.note)} ? ' · ' + ${r.note} : '')">
+                            </span>
+                        </span>
+                    </td>
+
+                    <td th:text="${p.manager.empId + ' / ' + p.manager.empName}">A2025 / 홍길동</td>
+
+                    <!-- ✅ 관리 -->
+                    <td class="manage-td">
+                        <div class="manage-box">
+                            <div class="manage-actions">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   th:href="@{/product/detail(id=${p.prodId})}">상세</a>
+
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   th:href="@{/product/edit(id=${p.prodId})}">수정</a>
+
+                                <form th:action="@{/product/delete}" method="post" class="m-0">
+                                    <input type="hidden" name="id" th:value="${p.prodId}">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-secondary btn-delete w-100"
+                                            onclick="return confirm('삭제할까요?')">삭제</button>
+                                </form>
+                            </div>
+
+                            <div class="manage-divider"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(list)}">
+                    <td colspan="11" class="text-center muted py-5">등록된 상품이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ✅ 페이징 -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="muted small">
+                page <span th:text="${page}">1</span> / <span th:text="${totalPages}">1</span>
+            </div>
+
+            <nav th:if="${totalPages != null and totalPages > 0}">
+                <ul class="pagination mb-0">
+                    <li class="page-item" th:classappend="${page <= 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/product/list(page=${page-1}, size=${size}, kw=${kw}, status=${status}, managerId=${managerId})}">이전</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == page} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/product/list(page=${i}, size=${size}, kw=${kw}, status=${status}, managerId=${managerId})}"
+                           th:text="${i}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${page >= totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/product/list(page=${page+1}, size=${size}, kw=${kw}, status=${status}, managerId=${managerId})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- hover 레이어 -->
+    <div id="imgPreview"><img></div>
+
+    <!-- ✅ JS: 이미지 hover 확대 (유지) -->
+    <script>
+        const imgPreview = document.getElementById('imgPreview');
+        const imgPreviewImg = imgPreview.querySelector('img');
+
+        document.querySelectorAll('.img-thumb').forEach(el => {
+          el.addEventListener('mouseenter', () => {
+            const src = el.dataset.img;
+            if (!src) return;
+
+            imgPreviewImg.src = src;
+
+            const r = el.getBoundingClientRect();
+            let x = r.right + 12;
+            let y = r.top;
+
+            if (x + 360 > window.innerWidth) x = r.left - 380;
+            if (y + 360 > window.innerHeight) y = window.innerHeight - 380;
+            if (y < 10) y = 10;
+
+            imgPreview.style.left = x + 'px';
+            imgPreview.style.top = y + 'px';
+            imgPreview.style.display = 'block';
+          });
+
+          el.addEventListener('mouseleave', () => {
+            imgPreview.style.display = 'none';
+            imgPreviewImg.src = '';
+          });
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

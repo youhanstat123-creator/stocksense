@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('로그인')"></head>
+<body th:replace="fragments/layout :: layout('login', ~{::content})">
+
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="cardx p-4 p-lg-5">
+
+                <div class="text-center mb-3">
+                    <div class="fw-bold" style="font-size:22px;">StockSense Login</div>
+                    <div class="muted small mt-1">사원 계정으로 접속해 주세요.</div>
+                </div>
+
+                <!-- ✅ 상품/사원관리 클릭 등으로 들어오면 안내 -->
+                <div th:if="${param.required}" class="alert alert-warning">
+                    로그인 후 이용 가능한 메뉴입니다. 먼저 로그인해 주세요.
+                </div>
+
+                <!-- ✅ 로그인 실패 시 -->
+                <div th:if="${param.error}" class="alert alert-danger">
+                    아이디 또는 비밀번호가 올바르지 않습니다.
+                </div>
+
+                <!-- ✅ 로그아웃 성공 시 -->
+                <div th:if="${param.logout}" class="alert alert-success">
+                    로그아웃되었습니다.
+                </div>
+
+                <form th:action="@{/login}" method="post" class="mt-3">
+                    <div class="mb-3">
+                        <label class="form-label">사원 ID</label>
+                        <input class="form-control" name="username" placeholder="예: A1001" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" name="password" placeholder="예: 1234" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">로그인</button>
+
+                    <div class="muted small mt-3 text-center">
+                        시연 계정: <b>A1001</b> / <b>1234</b>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

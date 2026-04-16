@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('사원 등록')"></head>
+
+<body th:replace="fragments/layout :: layout('emp', ~{::content})">
+<div th:fragment="content">
+
+    <!-- ✅ 상품등록처럼 넓게: container-xl -->
+    <div class="container-xl py-4">
+
+        <!-- ✅ 상단 타이틀 영역 -->
+        <div class="d-flex align-items-start justify-content-between mb-3">
+            <div>
+                <h2 class="fw-bold mb-1">사원 등록</h2>
+                <div class="text-muted small">생년월일은 date로 입력됩니다.</div>
+            </div>
+            <a class="btn btn-primary" th:href="@{/emp/list}">목록</a>
+        </div>
+
+        <!-- ✅ 상품등록처럼 카드 크게 -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- ✅ (중요) 폼 action/method는 기존 그대로 유지 -->
+                <form th:action="@{/emp/new}" method="post" enctype="multipart/form-data"
+                      class="row g-4" th:object="${dto}">
+
+                    <!-- 사원번호 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">사원번호</label>
+                        <input type="text" class="form-control form-control-lg"
+                               th:field="*{empId}" placeholder="사원번호를 입력해주세요"/>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('empId')}"
+                             th:errors="*{empId}"></div>
+                    </div>
+
+                    <!-- 이름 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">이름</label>
+                        <input type="text" class="form-control form-control-lg"
+                               th:field="*{empName}" placeholder="이름을 입력해주세요"/>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('empName')}"
+                             th:errors="*{empName}"></div>
+                    </div>
+
+                    <!-- 생년월일 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">생년월일</label>
+                        <input type="date" class="form-control form-control-lg"
+                               th:field="*{birth}"/>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('birth')}"
+                             th:errors="*{birth}"></div>
+                    </div>
+
+                    <!-- 부서 -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">부서</label>
+                        <select class="form-select form-select-lg" th:field="*{dept}">
+                            <option value="">부서를 선택하세요</option>
+                            <option value="총무">총무</option>
+                            <option value="영업">영업</option>
+                            <option value="관리">관리</option>
+                            <option value="개발">개발</option>
+                            <option value="인사">인사</option>
+                        </select>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('dept')}"
+                             th:errors="*{dept}"></div>
+                    </div>
+
+                    <!-- 연락처 -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">연락처</label>
+                        <input type="text" class="form-control form-control-lg"
+                               th:field="*{phone}" placeholder="010-1234-5678"/>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('phone')}"
+                             th:errors="*{phone}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">사원 이미지</label>
+                        <input type="file" class="form-control form-control-lg"
+                               th:field="*{imageFile}" accept="image/*"/>
+                        <div class="text-muted small mt-1">jpg/png/webp 권장</div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="col-12 d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">등록</button>
+                        <a th:href="@{/emp/list}" class="btn btn-outline-secondary btn-lg px-4">취소</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
+

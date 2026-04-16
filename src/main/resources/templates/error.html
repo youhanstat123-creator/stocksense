@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('에러')"></head>
+<body th:replace="fragments/layout :: layout('dash', ~{::content})">
+
+<div th:fragment="content">
+    <div class="cardx p-4">
+        <h4 class="fw-bold mb-2">에러가 발생했습니다.</h4>
+        <p class="muted mb-4">요청 처리 중 문제가 발생했습니다. 콘솔 로그를 확인하세요.</p>
+        <a class="btn btn-primary" th:href="@{/}">홈으로</a>
+    </div>
+</div>
+
+</body>
+</html>

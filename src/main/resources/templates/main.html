@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('2Way Smart Work Company')"></head>
+
+<body th:replace="fragments/layout :: layout('main', ~{::content})">
+
+<div th:fragment="content">
+
+    <style>
+        :root{
+          --bg:#0b1220;
+          --line: rgba(255,255,255,.12);
+          --txt: rgba(255,255,255,.92);
+          --muted: rgba(255,255,255,.70);
+          --muted2: rgba(255,255,255,.55);
+          --shadow: 0 30px 80px rgba(0,0,0,.45);
+          --shadow2: 0 18px 50px rgba(0,0,0,.35);
+          --radius: 22px;
+          --radius2: 16px;
+        }
+
+        .main-wrap{
+          position:relative;
+          min-height: calc(100vh - 86px);
+          padding: 26px 0;
+        }
+
+        .bgfx{
+          position:absolute; inset:-120px -120px -120px -120px;
+          background:
+            radial-gradient(900px 420px at 20% 12%, rgba(59,130,246,.40), transparent 62%),
+            radial-gradient(820px 520px at 92% 18%, rgba(14,165,233,.26), transparent 60%),
+            radial-gradient(900px 520px at 55% 105%, rgba(99,102,241,.22), transparent 60%),
+            linear-gradient(180deg, #0b1220, #070b14);
+          filter: saturate(1.15);
+          pointer-events:none;
+          z-index:0;
+        }
+        .bgfx::after{
+          content:"";
+          position:absolute; inset:0;
+          background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+          background-size: 22px 22px;
+          opacity:.25;
+          mask-image: radial-gradient(circle at 50% 30%, rgba(0,0,0,1), rgba(0,0,0,.25), rgba(0,0,0,0));
+        }
+
+        .mx{
+          position:relative;
+          z-index:1;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 18px;
+        }
+
+        .pill-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom: 14px; }
+        .pill{
+          display:inline-flex; align-items:center; gap:8px;
+          padding: 8px 12px; border-radius: 999px;
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.06);
+          color: var(--muted);
+          font-weight: 800;
+          font-size: 12px;
+          letter-spacing:.2px;
+          backdrop-filter: blur(10px);
+        }
+        .dot{ width:8px; height:8px; border-radius:999px; background: rgba(34,197,94,.95); box-shadow: 0 0 0 6px rgba(34,197,94,.15); }
+        .dot2{ width:8px; height:8px; border-radius:999px; background: rgba(59,130,246,.95); box-shadow: 0 0 0 6px rgba(59,130,246,.15); }
+
+        .hero{
+          display:grid;
+          grid-template-columns: 1.05fr .95fr;
+          gap: 18px;
+          align-items: stretch;
+        }
+        @media (max-width: 992px){ .hero{ grid-template-columns: 1fr; } }
+
+        /* LEFT */
+        .hero-left{
+          border-radius: var(--radius);
+          border: 1px solid var(--line);
+          background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+          box-shadow: var(--shadow);
+          padding: 26px 22px;
+          position:relative;
+          overflow:hidden;
+        }
+        .hero-left::before{
+          content:"";
+          position:absolute; inset:-2px;
+          background: radial-gradient(600px 180px at 20% 18%, rgba(59,130,246,.22), transparent 60%),
+                      radial-gradient(600px 220px at 80% 40%, rgba(14,165,233,.16), transparent 60%);
+          pointer-events:none;
+          z-index:0;
+        }
+        .hero-left > *{ position:relative; z-index:1; }
+
+        .h-title{
+          color: var(--txt);
+          font-weight: 950;
+          letter-spacing: -0.6px;
+          font-size: 40px;
+          line-height: 1.08;
+          margin: 6px 0 12px 0;
+        }
+        @media (max-width: 992px){ .h-title{ font-size: 34px; } }
+
+        .h-sub{
+          color: var(--muted);
+          font-weight: 700;
+          line-height: 1.55;
+          font-size: 14px;
+          margin: 0 0 18px 0;
+          max-width: 62ch;
+        }
+
+        .cta-row{ display:flex; gap: 10px; flex-wrap:wrap; margin-top: 14px; }
+        .btnx{
+          display:inline-flex; align-items:center; justify-content:center; gap: 10px;
+          padding: 12px 16px; border-radius: 14px;
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.06);
+          color: rgba(255,255,255,.92);
+          text-decoration:none;
+          font-weight: 900;
+          box-shadow: 0 10px 30px rgba(0,0,0,.25);
+          transition: transform .22s ease, background .22s ease, border-color .22s ease;
+          min-width: 180px;
+        }
+        .btnx:hover{
+          transform: translateY(-2px);
+          background: rgba(255,255,255,.10);
+          border-color: rgba(255,255,255,.18);
+          color: rgba(255,255,255,.95);
+        }
+        .btnx.primary{
+          border-color: rgba(59,130,246,.35);
+          background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(14,165,233,.85));
+          box-shadow: 0 18px 50px rgba(59,130,246,.25);
+        }
+        .btnx.primary:hover{ transform: translateY(-2px) scale(1.01); box-shadow: 0 25px 70px rgba(59,130,246,.28); }
+        .ic{
+          width:34px; height:34px; border-radius: 12px;
+          display:inline-flex; align-items:center; justify-content:center;
+          background: rgba(255,255,255,.14);
+          border: 1px solid rgba(255,255,255,.18);
+          font-size: 16px;
+        }
+
+        .kpi{
+          display:grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-top: 18px;
+        }
+        @media (max-width: 600px){
+          .kpi{ grid-template-columns: 1fr; }
+          .btnx{ min-width: 100%; }
+        }
+        .kpi-card{
+          border-radius: var(--radius2);
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.05);
+          padding: 12px 12px;
+          backdrop-filter: blur(10px);
+        }
+        .kpi-top{
+          display:flex; align-items:center; justify-content:space-between;
+          margin-bottom: 6px;
+          color: var(--muted2);
+          font-weight: 800;
+          font-size: 12px;
+          letter-spacing:.2px;
+        }
+        .kpi-val{
+          color: rgba(255,255,255,.95);
+          font-weight: 950;
+          font-size: 18px;
+          letter-spacing: -0.2px;
+        }
+
+        /* RIGHT: 이미지와 글 분리 (겹침 제거) */
+        .hero-right{
+          border-radius: var(--radius);
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.05);
+          box-shadow: var(--shadow);
+          overflow:hidden;
+          display:flex;
+          flex-direction:column;
+          min-height: 520px;
+        }
+        .media{
+          position:relative;
+          height: 320px; /* ✅ 이미지 영역 고정 */
+          overflow:hidden;
+          border-bottom: 1px solid rgba(255,255,255,.10);
+        }
+
+        .slide{
+          position:absolute; inset:0;
+          background-size: cover;
+          background-position: center;
+          transform: scale(1.06);
+          animation: kenburns 16s ease-in-out infinite;
+          filter: saturate(1.05) contrast(1.05);
+        }
+        @keyframes kenburns{
+          0%{ transform: scale(1.06) translateY(0px); }
+          50%{ transform: scale(1.12) translateY(-6px); }
+          100%{ transform: scale(1.06) translateY(0px); }
+        }
+        .slide.s1{ background-image: url('/image/2way.png'); }
+        .slide.s2{ background-image: url('/image/2way1.png'); opacity:0; animation: fade 16s ease-in-out infinite; animation-delay:0s; }
+        .slide.s3{ background-image: url('/image/2way2.jpg'); opacity:0; animation: fade 16s ease-in-out infinite; animation-delay:4s; }
+        .slide.s4{ background-image: url('/image/2way3.jpg'); opacity:0; animation: fade 16s ease-in-out infinite; animation-delay:8s; }
+        @keyframes fade{
+          0%{opacity:0}
+          8%{opacity:1}
+          33%{opacity:1}
+          45%{opacity:0}
+          100%{opacity:0}
+        }
+
+        /* 이미지 위 텍스트 없음 / 대신 살짝 그라데이션만 */
+        .media::after{
+          content:"";
+          position:absolute; inset:0;
+          background: linear-gradient(180deg, rgba(11,18,32,.08), rgba(11,18,32,.18));
+          pointer-events:none;
+        }
+
+        .right-body{
+          padding: 14px 14px;
+          display:flex;
+          flex-direction:column;
+          gap: 10px;
+        }
+
+        .sc-head{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 10px;
+        }
+        .sc-head .t{
+          color: rgba(255,255,255,.95);
+          font-weight: 950;
+          letter-spacing:-.3px;
+          font-size: 16px;
+          margin:0;
+        }
+        .sc-head .tag{
+          padding: 7px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,.18);
+          color: rgba(255,255,255,.78);
+          font-weight: 900;
+          font-size: 12px;
+          background: rgba(255,255,255,.06);
+        }
+
+        .sc-grid{
+          display:grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        @media (max-width: 520px){ .sc-grid{ grid-template-columns: 1fr; } }
+
+        .feat{
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,.14);
+          background: rgba(255,255,255,.05);
+          padding: 10px 10px;
+          display:flex;
+          gap: 10px;
+          align-items:flex-start;
+        }
+        .feat .b{
+          width:34px; height:34px; border-radius: 14px;
+          display:flex; align-items:center; justify-content:center;
+          background: rgba(59,130,246,.20);
+          border: 1px solid rgba(59,130,246,.35);
+          color: rgba(255,255,255,.92);
+          font-weight: 950;
+          flex: 0 0 auto;
+        }
+        .feat .k{
+          color: rgba(255,255,255,.92);
+          font-weight: 950;
+          font-size: 13px;
+          margin:0 0 4px 0;
+        }
+        .feat .d{
+          color: rgba(255,255,255,.70);
+          font-weight: 700;
+          font-size: 12px;
+          line-height: 1.4;
+          margin:0;
+        }
+
+        .trust{
+          margin-top: 14px;
+          border-radius: var(--radius);
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.05);
+          padding: 10px 12px;
+          display:flex;
+          gap: 10px;
+          align-items:center;
+          overflow:hidden;
+          box-shadow: 0 12px 40px rgba(0,0,0,.22);
+        }
+        .trust strong{
+          color: rgba(255,255,255,.92);
+          font-weight: 950;
+          letter-spacing: -.2px;
+          font-size: 13px;
+          white-space: nowrap;
+        }
+        .marq{
+          display:flex; gap: 14px; white-space: nowrap;
+          color: rgba(255,255,255,.70);
+          font-weight: 800;
+          font-size: 12px;
+          animation: marquee 18s linear infinite;
+        }
+        @keyframes marquee{
+          0%{ transform: translateX(0); }
+          100%{ transform: translateX(-50%); }
+        }
+        .chip{
+          display:inline-flex; align-items:center; gap: 8px;
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,.14);
+          background: rgba(255,255,255,.04);
+        }
+        .mini-dot{ width:7px; height:7px; border-radius:999px; background: rgba(34,197,94,.92); }
+        .mini-dot.b{ background: rgba(59,130,246,.92); }
+        .mini-dot.y{ background: rgba(251,191,36,.92); }
+    </style>
+
+    <div class="main-wrap">
+        <div class="bgfx"></div>
+
+        <div class="mx">
+
+            <div class="pill-row">
+                <span class="pill"><span class="dot"></span> Live Demo Ready</span>
+                <span class="pill"><span class="dot2"></span> StockSense · Smart Inventory</span>
+                <span class="pill">2Way Smart Work Company</span>
+            </div>
+
+            <div class="hero">
+
+                <section class="hero-left">
+                    <h1 class="h-title">
+                        사람과 AI가 함께 하는<br>
+                        운영 시스템
+                    </h1>
+
+                    <p class="h-sub">
+                        사무실과 현장을 하나의 흐름으로 연결하고,
+                        재고 상태를 자동으로 판정해 운영 의사결정을 즉시 가능하게 만듭니다.
+                        <br><br>
+                        로그인 후 대시보드에서 위험·주의·정상 상태, 담당자 기준 운영, 입고예정을 확인할 수 있습니다.
+                    </p>
+
+                    <div class="cta-row">
+                        <a class="btnx primary" th:href="@{/login}">
+                            <span class="ic">🔐</span>
+                            로그인 후 시작
+                        </a>
+
+                        <a class="btnx" th:href="@{/dashboard}">
+                            <span class="ic">📊</span>
+                            대시보드 보기
+                        </a>
+                    </div>
+
+                    <div class="kpi">
+                        <div class="kpi-card">
+                            <div class="kpi-top"><span>운영 표준화</span><span>01</span></div>
+                            <div class="kpi-val">사무실 / 현장</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-top"><span>자동 판정</span><span>02</span></div>
+                            <div class="kpi-val">위험 · 주의 · 정상</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-top"><span>실무 연결</span><span>03</span></div>
+                            <div class="kpi-val">담당자 · 입고예정</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="hero-right" aria-label="Showcase">
+                    <!-- ✅ 이미지 영역(겹침 없음) -->
+                    <div class="media">
+                        <div class="slide s1"></div>
+                        <div class="slide s2"></div>
+                        <div class="slide s3"></div>
+                        <div class="slide s4"></div>
+                    </div>
+
+                    <!-- ✅ 설명 영역(이미지 아래) -->
+                    <div class="right-body">
+                        <div class="sc-head">
+                            <p class="t">Enterprise-grade First Impression</p>
+                            <span class="tag">2Way · Premium UI</span>
+                        </div>
+
+                        <div class="sc-grid">
+                            <div class="feat">
+                                <div class="b">↔</div>
+                                <div>
+                                    <p class="k">Bi-directional Collaboration</p>
+                                    <p class="d">사람의 현장 판단과 AI의 데이터 인사이트를 한 화면의 흐름으로 연결합니다.</p>
+                                </div>
+                            </div>
+
+                            <div class="feat">
+                                <div class="b">⚙</div>
+                                <div>
+                                    <p class="k">Operational Clarity</p>
+                                    <p class="d">사무실/현장 표준 구분과 담당자 지정으로 운영 가시성을 높입니다.</p>
+                                </div>
+                            </div>
+
+                            <div class="feat">
+                                <div class="b">⏱</div>
+                                <div>
+                                    <p class="k">Decision Speed</p>
+                                    <p class="d">재고 기준 자동 상태판정으로 대응 시간을 단축합니다.</p>
+                                </div>
+                            </div>
+
+                            <div class="feat">
+                                <div class="b">🛡</div>
+                                <div>
+                                    <p class="k">Demo-proof Flow</p>
+                                    <p class="d">로그인 → 대시보드 → 상품/사원관리까지 시연 흐름이 끊기지 않습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="trust">
+
+                <div class="marq" aria-hidden="true">
+                    <span class="chip"><span class="mini-dot"></span> 민택훈</span>
+                    <span class="chip"><span class="mini-dot b"></span> 안민철</span>
+                    <span class="chip"><span class="mini-dot y"></span> 유한별</span>
+                    <span class="chip"><span class="mini-dot"></span> 임지나</span>
+                    <span class="chip"><span class="mini-dot b"></span> 박명은</span>
+                    <span class="chip"><span class="mini-dot y"></span> 한미애</span>
+
+                    <span class="chip"><span class="mini-dot"></span> Inventory Status Automation</span>
+                    <span class="chip"><span class="mini-dot b"></span> Manager Assignment</span>
+                    <span class="chip"><span class="mini-dot y"></span> Restock ETA Visibility</span>
+                    <span class="chip"><span class="mini-dot"></span> Enterprise UI Consistency</span>
+                    <span class="chip"><span class="mini-dot b"></span> Demo-ready Navigation</span>
+                    <span class="chip"><span class="mini-dot y"></span> Oracle + JPA</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

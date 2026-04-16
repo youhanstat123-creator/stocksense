@@ -1,0 +1,113 @@
+/* =========================
+   BADGE (공통)
+========================= */
+.badge-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+
+/* =========================
+   재고 상태(정상/주의/위험)
+   + 사원상태(재직/퇴사 등)도 함께 사용 가능
+========================= */
+
+/* 정상(재고/사원 재직) */
+.badge-ok{
+  color:#0f7a3b;
+  background:#e9f7ef;
+  border-color:#9ddbb9;
+}
+
+/* ✅ 주의(재고 경고) - 우선순위 높게 */
+.badge-pill.badge-warn{
+  color:#b26a00 !important;
+  background:#fff4e5 !important;
+  border-color:#ffd199 !important;
+}
+
+/* 위험(재고 위험) / 퇴사(사원 상태)로도 사용 중 */
+.badge-danger{
+  color:#c0392b;
+  background:#fdecea;
+  border-color:#f5b7b1;
+}
+
+/* 휴가 */
+.badge-info{
+  color:#1f6fb2;
+  background:#eaf3fb;
+  border-color:#b6d4f0;
+}
+
+/* 휴직 */
+.badge-muted{
+  color:#6c757d;
+  background:#f1f3f5;
+  border-color:#d6d8db;
+}
+
+/* 계약직 */
+.badge-amber{
+  color:#b26a00;
+  background:#fff4e5;
+  border-color:#ffd199;
+}
+
+/* =========================
+   DARK THEME (가독성 모드)
+========================= */
+[data-theme="dark"]{
+  --bg:#000000;
+  --card:#ffffff;
+  --line:#d1d5db;
+
+  --text:#000000;
+  --muted:#374151;
+
+  --primary:#2563eb;
+}
+
+[data-theme="dark"] body{
+  background:#000000;
+  color:var(--text);
+}
+
+[data-theme="dark"] .navbar{
+  background:#020617 !important;
+  border-bottom:1px solid #1f2933;
+}
+
+[data-theme="dark"] .cardx{
+  background:#ffffff;
+  color:#000000;
+}
+
+[data-theme="dark"] .table{
+  background:#ffffff;
+}
+
+[data-theme="dark"] .table thead th{
+  background:#f3f4f6;
+  color:#000000;
+}
+
+[data-theme="dark"] .table td{
+  color:#000000;
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select{
+  background:#ffffff;
+  color:#000000;
+  border-color:#d1d5db;
+}
+
+[data-theme="dark"] .btn{
+  color:#000000;
+}

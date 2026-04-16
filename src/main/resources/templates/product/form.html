@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('상품 등록')"></head>
+<body th:replace="fragments/layout :: layout('prod', ~{::content})">
+
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="cardx p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="m-0 fw-bold">상품 등록</h4>
+                        <div class="muted small mt-1">최소재고 설정 후 상태가 자동 판정됩니다.</div>
+                    </div>
+                    <a th:href="@{/product/list}" class="btn btn-outline-secondary">목록</a>
+                </div>
+
+                <hr class="my-4">
+
+                <form th:action="@{/product/new}" method="post" th:object="${dto}" enctype="multipart/form-data">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">상품명</label>
+                            <input class="form-control" th:field="*{prodName}" required>
+                        </div>
+
+                        <!-- ✅ 1차 분류(고정) -->
+                        <div class="col-md-3">
+                            <label class="form-label">구분</label>
+                            <select class="form-select" th:field="*{areaType}" required>
+                                <option value="사무실">사무실</option>
+                                <option value="현장">현장</option>
+                            </select>
+                            <div class="muted small mt-1">업무 흐름 기준(사무실/현장)</div>
+                        </div>
+
+                        <!-- ✅ 2차 분류(세부) -->
+                        <div class="col-md-3">
+                            <label class="form-label">카테고리(세부)</label>
+                            <input class="form-control" th:field="*{category}" placeholder="예: 회의실/탕비실/공구/안전용품" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">가격</label>
+                            <input type="number" class="form-control" th:field="*{price}" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">현재 재고</label>
+                            <input type="number" class="form-control" th:field="*{stock}" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">최소 재고</label>
+                            <input type="number" class="form-control" th:field="*{minStock}" min="0" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">담당 사원</label>
+                            <select class="form-select" th:field="*{managerId}" required>
+                                <option value="">담당자를 선택하세요</option>
+                                <option th:each="e : ${emps}"
+                                        th:value="${e.empId}"
+                                        th:text="${e.empId + ' / ' + e.empName + ' (' + e.dept + ')'}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">상품 이미지</label>
+                            <input class="form-control" type="file" name="imageFile" accept="image/*">
+                            <div class="muted small mt-1">PNG/JPG 권장, 업로드 시 목록에 썸네일로 표시됩니다.</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">입고예정일(선택)</label>
+                            <input class="form-control" type="date" th:field="*{etaDate}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">입고수량(선택)</label>
+                            <input class="form-control" type="number" th:field="*{etaQty}" min="0">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">입고 메모(선택)</label>
+                            <input class="form-control" th:field="*{etaNote}" placeholder="예: 12/30 오후 입고">
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a th:href="@{/product/list}" class="btn btn-outline-secondary">취소</a>
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </div>
+
+                    <div class="muted small mt-3">
+                        상태 자동판정: 재고 ≤ 최소재고 = 위험 / 재고 ≤ 최소재고+5 = 주의 / 그 외 = 정상
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

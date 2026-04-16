@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="menu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        .top_title{ text-align:center; }
+        .brand { font-weight: 700; letter-spacing: .3px; }
+        .navbar-inverse { background: rgba(15, 23, 42, 0.85); border: none; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+        .navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav > li > a, .navbar-inverse .navbar-text { color: #e0f2fe !important; }
+        .navbar-inverse .navbar-nav > li > a:hover { background: rgba(255,255,255,.15); border-radius: 6px; }
+    </style>
+</head>
+
+<body>
+<h2 class="top_title"> ☁ StockSense ☁ </h2>
+
+<nav class="navbar navbar-inverse" style="border-radius:0;">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand brand" th:href="@{/}">☁ StockSense ☁</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <!-- 너 프로젝트가 대시보드가 /dashboard면 여기만 바꾸면 됨 -->
+            <li><a th:href="@{/dashboard}">대시보드</a></li>
+
+            <!-- 상품관리 URL은 너 프로젝트에 맞춰 유지 -->
+            <li><a th:href="@{/product/list}">상품목록</a></li>
+
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    사원관리 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a th:href="@{/emp/new}">사원등록</a></li>
+                    <li><a th:href="@{/emp/list}">사원목록</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="navbar-text navbar-right" th:text="${company}">Company</p>
+    </div>
+</nav>
+</body>
+</html>

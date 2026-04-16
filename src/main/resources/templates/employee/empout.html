@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('사원 목록')}"></head>
+
+<body th:replace="~{fragments/layout :: layout('emp', ~{::content})}">
+<div th:fragment="content">
+
+    <style>
+        /* 이미지 썸네일 + hover 확대(상품목록 느낌) */
+        .emp-thumb-wrap{
+          position: relative;
+          width: 56px; height: 56px;
+        }
+        .emp-thumb{
+          width:56px; height:56px;
+          object-fit:cover;
+          border-radius:12px;
+          border:1px solid #e5e7eb;
+          background:#fff;
+          cursor: zoom-in;
+        }
+        /* hover 시 큰 프리뷰 */
+        .emp-thumb-preview{
+          position:absolute;
+          left: 64px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 220px;
+          height: 220px;
+          border-radius: 16px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 12px 30px rgba(0,0,0,.12);
+          background: #fff;
+          object-fit: cover;
+          display: none;
+          z-index: 10;
+        }
+        .emp-thumb-wrap:hover .emp-thumb-preview{
+          display:block;
+        }
+        /* 화면 오른쪽 끝에서 잘리지 않게 */
+        @media (max-width: 992px){
+          .emp-thumb-preview{ display:none !important; }
+        }
+
+        /* N/A 스타일 */
+        .emp-na{
+          width:56px; height:56px;
+          border-radius:12px;
+          border:1px dashed #cbd5e1;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:#94a3b8;
+          font-size:12px;
+          background:#f8fafc;
+        }
+    </style>
+
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="cardx p-4 p-lg-5">
+
+                <!-- 상단 타이틀/버튼 -->
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+                    <div>
+                        <h4 class="m-0 fw-bold">사원 목록</h4>
+                        <div class="muted small mt-1">등록된 사원 인적 정보를 확인할 수 있습니다.</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/emp/new}" class="btn btn-primary">+ 사원등록</a>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- 테이블 -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th style="width:110px;">이미지</th>
+                            <th style="width:140px;">사원번호</th>
+                            <th style="width:160px;">사원명</th>
+                            <th style="width:160px;">생년월일</th>
+                            <th style="width:140px;">부서</th>
+                            <th style="width:180px;">전화번호</th>
+                            <th style="width:140px;">재직상태</th>
+                            <th style="width:160px;">관리</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <!-- 데이터 있을 때 -->
+                        <tr th:each="e : ${list}">
+
+                            <!-- ✅ 이미지 칸 (hover 확대) -->
+                            <td>
+                                <div th:if="${e.imageName != null}" class="emp-thumb-wrap">
+                                    <img class="emp-thumb"
+                                         th:src="@{/uploads/{img}(img=${e.imageName})}"
+                                         alt="employee"/>
+                                    <img class="emp-thumb-preview"
+                                         th:src="@{/uploads/{img}(img=${e.imageName})}"
+                                         alt="preview"/>
+                                </div>
+
+                                <div th:if="${e.imageName == null}" class="emp-na">N/A</div>
+                            </td>
+
+                            <td class="fw-semibold" th:text="${e.empId}">A1001</td>
+                            <td th:text="${e.empName}">김총무</td>
+                            <td th:text="${e.birth}">1984-01-01</td>
+                            <td th:text="${e.dept}">총무</td>
+                            <td th:text="${e.phone}">010-1111-2222</td>
+
+                            <!-- ✅ 상태 pill -->
+                            <td
+                                    th:with="
+                    st=${e.status==null ? '' : #strings.toUpperCase(#strings.trim(e.status.toString()))},
+                    koText=${st=='ACTIVE' or st=='재직중' ? '재직중'
+                          : st=='VACATION' or st=='휴가' ? '휴가'
+                          : st=='LEAVE' or st=='휴직' ? '휴직'
+                          : st=='CONTRACT' or st=='계약직' ? '계약직'
+                          : st=='RESIGNED' or st=='퇴사' ? '퇴사'
+                          : (st=='' ? '-' : e.status)},
+                    koClass=${st=='ACTIVE' or st=='재직중' ? 'badge-ok'
+                           : st=='VACATION' or st=='휴가' ? 'badge-info'
+                           : st=='LEAVE' or st=='휴직' ? 'badge-muted'
+                           : st=='CONTRACT' or st=='계약직' ? 'badge-amber'
+                           : st=='RESIGNED' or st=='퇴사' ? 'badge-danger'
+                           : 'badge-muted'}
+                  ">
+                                <span class="badge-pill" th:classappend="' ' + ${koClass}" th:text="${koText}">재직중</span>
+                            </td>
+
+                            <!-- 관리 -->
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       th:href="@{/emp/edit(empId=${e.empId})}">수정</a>
+
+                                    <a class="btn btn-outline-danger btn-sm"
+                                       th:href="@{/emp/delete(empId=${e.empId})}"
+                                       onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- 데이터 없을 때 -->
+                        <tr th:if="${#lists.isEmpty(list)}">
+                            <td colspan="8" class="text-center muted py-5">등록된 사원이 없습니다.</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

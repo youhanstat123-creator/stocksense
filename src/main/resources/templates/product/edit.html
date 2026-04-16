@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('상품 수정')"></head>
+<body th:replace="fragments/layout :: layout('prod', ~{::content})">
+
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="cardx p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="m-0 fw-bold">상품 수정</h4>
+                        <div class="muted small mt-1">ID: <span th:text="${id}"></span></div>
+                    </div>
+                    <a th:href="@{/product/detail(id=${id})}" class="btn btn-outline-secondary">상세로</a>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger mt-3 mb-0" th:text="${error}"></div>
+                <hr class="my-4">
+
+                <form th:action="@{/product/edit(id=${id})}" method="post" th:object="${dto}" enctype="multipart/form-data">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">상품명</label>
+                            <input class="form-control" th:field="*{prodName}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">구분</label>
+                            <select class="form-select" th:field="*{areaType}" required>
+                                <option value="사무실">사무실</option>
+                                <option value="현장">현장</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">카테고리(세부)</label>
+                            <input class="form-control" th:field="*{category}" placeholder="예: 회의실/탕비실/공구/안전용품" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">가격</label>
+                            <input type="number" class="form-control" th:field="*{price}" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">현재 재고</label>
+                            <input type="number" class="form-control" th:field="*{stock}" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">최소 재고</label>
+                            <input type="number" class="form-control" th:field="*{minStock}" min="0" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">담당 사원</label>
+                            <select class="form-select" th:field="*{managerId}" required>
+                                <option value="">담당자를 선택하세요</option>
+                                <option th:each="e : ${emps}"
+                                        th:value="${e.empId}"
+                                        th:text="${e.empId + ' / ' + e.empName + ' (' + e.dept + ')'}"></option>
+                            </select>
+                        </div>
+
+                        <!-- 현재 이미지 -->
+                        <div class="col-md-12" th:if="${product.imageName != null}">
+                            <label class="form-label">현재 이미지</label>
+                            <div>
+                                <img th:src="@{/uploads/{f}(f=${product.imageName})}"
+                                     style="height:70px;border-radius:10px;border:1px solid #e5e7eb;">
+                            </div>
+                        </div>
+
+                        <!-- 새 이미지 업로드 -->
+                        <div class="col-md-12">
+                            <label class="form-label">이미지 변경</label>
+                            <input class="form-control" type="file" name="imageFile" accept="image/*">
+                            <div class="muted small mt-1">파일 선택 시 새 이미지로 교체됩니다.</div>
+                        </div>
+
+                        <!-- 입고예정(선택) -->
+                        <div class="col-md-4">
+                            <label class="form-label">입고예정일(선택)</label>
+                            <input class="form-control" type="date" th:field="*{etaDate}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">입고수량(선택)</label>
+                            <input class="form-control" type="number" th:field="*{etaQty}" min="0">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">입고 메모(선택)</label>
+                            <input class="form-control" th:field="*{etaNote}" placeholder="예: 12/30 오후 입고">
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a th:href="@{/product/detail(id=${id})}" class="btn btn-outline-secondary">취소</a>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

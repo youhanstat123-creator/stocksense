@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="topbar(company)">
+    <div style="background:#111827;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <div style="font-weight:800;font-size:16px;" th:text="${company}"></div>
+            <div style="opacity:.85;font-size:12px;">2Way Smart Work · 총무 실무형 사원/재고 관리</div>
+        </div>
+        <div>
+            <a th:href="@{/}" style="color:#fff;margin-right:14px;text-decoration:none;">대시보드</a>
+            <a th:href="@{/emp/new}" style="color:#fff;margin-right:14px;text-decoration:none;">사원등록</a>
+            <a th:href="@{/emp/list}" style="color:#fff;margin-right:14px;text-decoration:none;">사원목록</a>
+            <a th:href="@{/product/list}" style="color:#fff;text-decoration:none;">상품목록</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

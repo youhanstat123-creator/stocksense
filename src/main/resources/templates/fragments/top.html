@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="top(company)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+        body { background:#f5f7fb; }
+        .brand { font-weight:700; letter-spacing:0.2px; }
+        .wrap { margin-top: 25px; }
+        .card {
+            background:#fff; border-radius:14px; padding:22px;
+            border:1px solid #e9edf5;
+            box-shadow: 0 10px 25px rgba(16,24,40,.06);
+        }
+        .page-title { margin:0 0 14px; font-weight:700; }
+        .badge-soft { background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; }
+        .state-ok { background:#e8f7ee; color:#166534; border-color:#bbf7d0; }
+        .state-warn { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+        .state-danger { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+        .muted { color:#6b7280; }
+        .table > thead > tr > th { background:#fafbff; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse" style="border-radius:0;">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand brand" th:href="@{/}">2Way Smart Work Company</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <li><a th:href="@{/}">대시보드</a></li>
+            <li><a th:href="@{/product/list}">상품목록</a></li>
+
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    사원관리 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a th:href="@{/emp/new}">사원등록</a></li>
+                    <li><a th:href="@{/emp/list}">사원목록</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="navbar-text navbar-right" th:text="${company}">Company</p>
+    </div>
+</nav>
+
+<div class="container wrap">
